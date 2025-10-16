@@ -21,6 +21,4 @@
 - [Chain Registries](chain-registries.md)
 - [Shared Bridges](shared-bridges.md)
 
-## Additional Resources
-- [Architecture Overview](architecture.md)
-- [FAQ](faq.md)
+
