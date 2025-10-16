@@ -20,47 +20,7 @@ ERC-7930 builds upon the foundation of CAIP-10's string based account identifier
 
 The most significant point of incompatibility arises from the constraints on chain identifier length. CAIP-10 leverages **CAIP-2**, which formally limits the `reference` portion of a chain ID to a **maximum of 32 characters** composed of `[a-zA-Z0-9]`. This design was based on practical assumptions from when the standard was written, for example, many early chain profiles, especially for UTXO based chains like Bitcoin, expected identifiers no longer than 16 bytes (32 hex characters). Consequently, many applications built around CAIP-10 assumed reasonably short chain IDs.
 
-In contrast, ERC-7930 was explicitly designed to be future-proof and **does not impose any limit on chain ID size**, allowing it to natively support full 256-bit (32 byte) identifiers in its binary format. This foresight is critical for emerging standards like **ERC-7785**, which proposes using a `keccak256` hash of a chain's name to create a collision resistant ID. Such a hash is 32 bytes long, and its hexadecimal string representation is 64 characters long (plus `0x`).
-
-This creates a direct conflict: a 64-character hash string cannot be stored in a 32-character field. In CAIP-2 terms, there’s no clear or standard way to truncate a 32 byte hash into a 32-character reference without breaking the specification and losing the guarantee of uniqueness**.** ERC-7930 gracefully handles this, while CAIP-10's format cannot.
-
-### **Example 1: The CAIP-2 Limit**
-
-```
-// CAIP-2 Chain Reference: Maximum 32 characters.
-// A real-world example is Bitcoin, whose `reference` is a 32-character hex string.
-bip122:000000000019d6689c085ae165831e93:1A1z...
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        Exactly 32 characters, matching the limit.
-
-```
-
-### **Example 2: The ERC-7785 Problem**
-
-```
-// ERC-7785 uses keccak256 for chain IDs. Hashes are 32 bytes long.
-bytes32 chainIdHash = keccak256("arbitrum-nova-zk-rollup-2025");
-
-// The hexadecimal string representation of a 32-byte hash is 64 characters long.
-// Result: 0x59a35e1b33e2842d416b2e1a3a6971ce181d2da2834655f2b322a36b33b23e1b
-//         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//         64 characters - Far exceeds CAIP-10's 32-character limit.
-
-```
-
-### **Example 3: The ERC-7930 Solution**
-
-```
-// ERC-7930's binary format natively supports full 256-bit (32-byte) chain IDs.
-// Using the same hash from the problem above, the binary payload would be structured as:
-
-0x000100002059a35e1b33e2842d416b2e1a3a6971ce181d2da2834655f2b322a36b33b23e1b...
-// │  │   │ └─ ChainReference: The full 32-byte keccak256 hash
-// │  │   └─ ChainRefLen: 32 bytes (0x20)
-// │  └─ ChainType: eip155 (0x0000)
-// └─ Version: 1 (0x0001)
-
-```
+In contrast, ERC-7930 was explicitly designed to be future-proof and **does not impose any limit on chain ID size**, allowing it to natively support full 256-bit (32 byte) identifiers in its binary format.
 
 ### 2. Field Order and Separator **(`address@chain` vs `chain:address`)**
 
