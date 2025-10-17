@@ -1,3 +1,6 @@
+> [!NOTE] 
+> After several proposals, the community has begun to converge on **ERC-7786** as a unifying standard for cross-chain messaging. Its modular and chain-agnostic design positions it as a solid foundation for the future of interoperability.
+
 # Message Passing
 
 As the Ethereum landscape evolves, passing valid messages between different L2s, L3s, and LXs becomes fundamental for interconnecting user activity across chains, moving liquidity, and unlocking multi-domain applications, among other reasons. The desire for standardized APIs has motivated the creation of various proposals, from simple interfaces to those that aim to accommodate recent (thus common) rollup flows.
@@ -28,9 +31,9 @@ sequenceDiagram
     ContractB->>Recipient: Deliver message contents
 ```
 
-### ERC-7786: Cross-Chain Messaging Gateway
+### ERC-7786: The Crosschain Messaging Gateway
 
-[ERC-7786](https://github.com/ethereum/ERCs/pull/673) also proposes a minimal interface to send (`sendMessage`) and receive (`executeMessage`) arbitrary messages. It contains extensible attributes that can be adapted to multiple bridging protocol models, as it is intented to be proof-agnostic. It leverages CAIP-10 for sender/receiver addresses, and introduces an optional post-proccessing step for any custom logic, as well as a explicit definitions of roles for sending and executing messages.
+[ERC-7786](https://github.com/ethereum/ERCs/pull/673) proposes a modular and extensible interface for cross-chain messaging. Due to its flexibility and growing adoption by the community, this standard is analyzed in detail in the final section of this document.
 
 ```mermaid
 sequenceDiagram
@@ -294,3 +297,22 @@ The existing approaches are divided into proposed standards and actual implement
 | **Bundling** | Single message. | Single message, but attributes can define some bundling logic. | `sessionId` can group messages. No atomic multi-call. | Yes, possible bundling through ISM validation to orchestrate it. | No bundling. | Yes, limited to “mint + 1 contract call”. | Single message, but attributes can define some bundling logic. `guid`/`compose`can coordinate multiple packets. | Single call invocation. | Single call invocation. | Single call invocation. | Single call invocation. |
 | **Pull/Push Support** | Not defined (but it could given its generality) | Explicitly supports both. | Supported via separate mailbox contracts | Supported; e.g. integration with synchronous L2s like Superchain outlined. | Support both. | Support both. | Support both. | Push in deposits. Pull in withdrawals. | Support both. | Push in deposits. Pull still available. Pull in withdrawals. | Push in deposits. Pull in withdrawals. |
 | **Modularity** | Simple Interface. | Gateway + attributes give modularity open to implementers. | Modular: mailbox split by sync/async, attributes via metadata, inbox logic separate. | Highly modular: ISMs, Hooks, message structure, full plug-and-play components | Implementation attached to their use cases. | Implementation attached to their use cases. | Modular since it has core + pluggable Send/Receive libraries, DVN & Executor choice, composer for follow‑ups, all under the LayerZero definitions. | Mostly monolithic. | Mostly monolithic. | Mostly monolithic. | Mostly monolithic. |
+
+# ERC-7786 Explained
+
+As mentioned, ERC-7786 is emerging as the community's preferred standard for cross-chain messaging. Its design strikes a balance between a minimal interface and the extensibility needed to accommodate the diversity of existing bridge protocols.
+
+### Key Components of ERC-7786
+
+- **Gateways**: The standard defines an `IERC7786GatewaySource` for sending messages from the source chain and expects the receiver on the destination chain to implement an `IERC7786Receiver` interface to process them securely.
+
+- **Agnostic Identifiers**: It uses **CAIP-10** to identify the sender and receiver, ensuring compatibility with ecosystems beyond EVM.
+
+- **Extensible Attributes**: One of its most powerful features is the `attributes` system. These are additional data that can be attached to a message to use specific bridge functionalities, such as specifying gas limits, requesting post-processing, or defining other custom logic, without altering the main interface.
+
+- **Post-Processing Flow**: The standard acknowledges that sending a message may require additional steps after the initial call (such as paying for gas on the destination chain). This "post-processing" can be managed flexibly, either by a relayer or by a specific actor defined in the attributes.
+
+### Why Is It Gaining Traction?
+
+The main reason for its adoption is its modularity. Instead of imposing a single model, ERC-7786 acts as an abstraction layer that allows developers to interact with different messaging protocols (native to rollups, external like LayerZero, or future ones) through a single interface. This reduces vendor lock-in and fosters a more composable and resilient interoperability ecosystem.
+
