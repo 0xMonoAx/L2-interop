@@ -10,7 +10,7 @@ This approach, while practical, has two fundamental limitations:
 
 ## The Objective of the Chain Registry
 
-The Chain Registry addresses these limitations through a verifiable and standardized on-chain registry implemented in the `ChainResolver.sol` contract.
+The Chain Registry addresses these limitations through a verifiable and standardized on-chain registry implemented in the `ChainResolver.sol` contract. It serves as the on-chain implementation for the human-readable chain name resolution proposed in **ERC-7828**.
 
 This system:
 -   Stores chain data directly on the blockchain.
@@ -41,11 +41,13 @@ Each registration has its own owner (`labelOwner`), who is responsible for manag
 
 ## Identifier Format: ERC-7930
 
-The Chain Registry uses the Chain Identifier defined in **ERC-7930**, a compact format that encapsulates two components:
--   Chain type
--   Short reference
+The Chain Registry stores a standardized binary representation for chain identifiers, designed to be the on-chain counterpart to the text-based **CAIP-2** standard.
 
-This format is designed to be interoperable with the CAIP-2 standard, allowing for uniform identification for both EVM and non-EVM chains. In practice, the identifiers are short (≈40 bytes), but the full ERC-7930 specification supports up to 263 bytes for more complex cases.
+To achieve this, it uses a subset of the **ERC-7930** Interoperable Address format. Specifically, it stores an Interoperable Address where the `AddressLength` field is set to zero.
+
+While ERC-7930 defines the *structure* (the "envelope"), **CAIP-350** provides the *content* (the "instructions"). Each CAIP-350 profile specifies how a chain's `namespace` and `reference` (from CAIP-2) are encoded into the binary `ChainType` and `ChainReference` fields.
+
+This modular approach allows the registry to support identifiers of any length, overcoming the 32-character limitation of CAIP-2 and ensuring compatibility with both EVM and non-EVM chains.
 
 ## Core Operations
 
