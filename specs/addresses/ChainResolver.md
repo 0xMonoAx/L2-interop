@@ -120,9 +120,12 @@ Reverse lookups use the `text` record interface with a specially formatted key. 
 
 ## EIP-7930 Chain Identifier Format
 
-The resolver uses the chain-only variant of EIP-7930, which omits the address portion (`AddressLength = 0`) to create a compact, canonical identifier for a blockchain.
+The resolver stores a standardized binary representation for chain identifiers, designed to be the on-chain counterpart to the text-based **CAIP-2** standard. To achieve this, it uses a subset of the **ERC-7930** Interoperable Address format where the `AddressLength` field is set to zero.
+
+While ERC-7930 defines the *structure* (the "envelope"), a related standard, **CAIP-350**, provides the *content* rules. Each CAIP-350 profile specifies how a chain's `namespace` and `reference` from its CAIP-2 identifier are encoded into the binary `ChainType` and `ChainReference` fields.
 
 ### Structure
+
 The binary format is composed of the following fields:
 ```
 ┌─────────┬───────────┬──────────────────────┬────────────────┬───────────────┐
@@ -130,10 +133,10 @@ The binary format is composed of the following fields:
 └─────────┴───────────┴──────────────────────┴────────────────┴───────────────┘
 ```
 - **Version** (2 bytes): `0x0001` for this version of the standard.
-- **ChainType** (2 bytes): The CAIP-2 namespace for the chain family (e.g., `0x0000` for `eip155`).
+- **ChainType** (2 bytes): The CAIP-2 namespace code (defined by CAIP-350). For `eip155`, this is `0x0000`.
 - **ChainReferenceLength** (1 byte): The length of the `ChainReference` in bytes.
 - **ChainReference** (variable): The chain's identifier within its namespace (e.g., the chain ID for `eip155`).
-- **AddressLength** (1 byte): `0x00`, as this is a chain-only identifier.
+- **AddressLength** (1 byte): Always `0x00`, as this is a chain-only identifier.
 
 ### Example: Optimism (Chain ID 10)
 The identifier for Optimism is `0x00010000010a00`. Here’s the breakdown:
