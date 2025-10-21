@@ -55,17 +55,17 @@ ENSIPs (ENS Improvement Proposals) focus on improving and standardizing the Ethe
 
 The existing approaches to chain-specific addresses represent an evolution in thinking about cross-chain identification. Rather than being competing solutions, many of these standards build upon the lessons learned from previous implementations or address different aspects of the problem.
 
-| **Feature** | ERC-3770 | CAIP-10 | CAIP-50 | ERC-7828 | ENSIP-9/ENSIP-11 | CAIP-2 | ERC-7930 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| **Scope** | Primarily a UI/UX layer standard for human-readable prefixes | A universal, machine-readable account identifier format for all blockchains | Compact, binary account ID format for all blockchains | On-chain naming integration with ENS for human-readable chain and address names | ENS resolver-level standards for storing/retrieving multichain addresses | Universal blockchain identifier (machine-readable) | Universal and extensible binary and text format for chain-specific addresses |
-| **Status** | Draft (Fully defined) | Final (Fully defined) | Draft | Draft (Incomplete) | Final/Draft | Final | Last Call |
-| **Format Example** | `chain:address` | `chain_namespace:chain_reference:address` | `zUJWDx...` (base58btc) | `address:chain.eth` or `address@chain.eth` | Still uses typical `.eth` format | `namespace:reference` | `<address>@<chain>#<checksum>` |
-| **Human Readability (_best-case_)** | Medium | Medium | Low | High | High (from typical ENS format) | High | High |
-| **Technical Compatibility** | EVM only (but extensible) | All chains | All chains | All chains (via ENS) | Blockchains part of [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md) or following EVM `chainId` specs | All chains | All chains (via CAIP-350 profiles) |
-| **ENS Integration** | Not Required | Not Required | Not Required | Required | Required | Not Required | Supported |
-| **DID Compatibility** | | | Supported | | | Not direct | Compatible |
-| **Checksum Support** | Incomplete (ERC-55 only) | No | Yes (parity byte) | Yes | Yes | No | Yes |
-| **Use of lists** | Yes (referencing github.com/ethereum-lists/chains) | No | No | Yes (requires on-chain registry) | Based on [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md) | Not direct | Indirect (via CAIP-350 profiles) |
+| **Feature** | ERC-3770 | CAIP-10 | CAIP-50 | ERC-7828 | ENSIP-9/ENSIP-11 | CAIP-2 | CAIP-350 | ERC-7930 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **Scope** | Primarily a UI/UX layer standard for human-readable prefixes | A universal, machine-readable account identifier format for all blockchains | Compact, binary account ID format for all blockchains | On-chain naming integration with ENS for human-readable chain and address names | ENS resolver-level standards for storing/retrieving multichain addresses | Universal blockchain identifier (machine-readable) | Serialization profiles for chain-specific addresses in binary format | Universal and extensible binary and text format for chain-specific addresses |
+| **Status** | Draft (Fully defined) | Final (Fully defined) | Draft | Draft (Incomplete) | Final/Draft | Final | Draft | Last Call |
+| **Format Example** | `chain:address` | `chain_namespace:chain_reference:address` | `zUJWDx...` (base58btc) | `address:chain.eth` or `address@chain.eth` | Still uses typical `.eth` format | `namespace:reference` | N/A (meta-specification) | `<address>@<chain>#<checksum>` |
+| **Human Readability (_best-case_)** | Medium | Medium | Low | High | High (from typical ENS format) | High | Low | High |
+| **Technical Compatibility** | EVM only (but extensible) | All chains | All chains | All chains (via ENS) | Blockchains part of [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md) or following EVM `chainId` specs | All chains | All chains (via profiles) | All chains (via CAIP-350 profiles) |
+| **ENS Integration** | Not Required | Not Required | Not Required | Required | Required | Not Required | Supported | Supported |
+| **DID Compatibility** | | | Supported | | | Not direct | Compatible | Compatible |
+| **Checksum Support** | Incomplete (ERC-55 only) | No | Yes (parity byte) | Yes | Yes | No | Yes (via ERC-7930) | Yes |
+| **Use of lists** | Yes (referencing github.com/ethereum-lists/chains) | No | No | Yes (requires on-chain registry) | Based on [SLIP-0044](https://github.com/satoshilabs/slips/blob/master/slip-0044.md) | Not direct | Yes (defines a registry of profiles) | Indirect (via CAIP-350 profiles) |
 
 # Additional Considerations
 
