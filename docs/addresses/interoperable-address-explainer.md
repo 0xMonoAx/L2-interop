@@ -26,7 +26,7 @@ ERC-7930 defines an efficient and unambiguous binary structure, ideal for proces
 └─────────┴───────────┴──────────────────────┴────────────────┴───────────────┴─────────┘
 ```
 - **Version**: A 2-byte identifier that allows for future upgrades.
-- **ChainType**: A 2-byte value defining the blockchain family (e.g., `eip155` for EVM).
+- **ChainType**: A 2-byte value as defined in CAIP-350, corresponding to a CAIP-2 namespace, which allows users to know how to interpret & display the other two fields.
 - **ChainReference/Length**: The chain's identifier (e.g., `1` for Ethereum) and its length.
 - **Address/Length**: The account address in binary format and its length.
 
