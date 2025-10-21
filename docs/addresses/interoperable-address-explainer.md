@@ -1,4 +1,4 @@
-# Interoperable Addresses Explained
+# ERC-7930: Interoperable Addresses, Explained
 
 *The formal specification can be found in [ERC-7930](https://eips.ethereum.org/EIPS/eip-7930).*
 
