@@ -1,6 +1,6 @@
 # Interoperable Addresses Explained
 
-*The formal specification can be found in [EIP-7930](https://eips.ethereum.org/EIPS/eip-7930).*
+*The formal specification can be found in [ERC-7930](https://eips.ethereum.org/EIPS/eip-7930).*
 
 ## The Problem: Hundreds of Chains, One Address Format
 
