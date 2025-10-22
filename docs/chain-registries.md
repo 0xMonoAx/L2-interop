@@ -8,7 +8,7 @@ This approach, while practical, has two fundamental limitations:
 1.  It requires trust in external repositories or servers.
 2.  The information cannot be queried natively by smart contracts.
 
-## The Objective of the Chain Registry
+## Purpose of the Chain Registry
 
 The Chain Registry addresses these limitations through a verifiable and standardized on-chain registry implemented in the `ChainResolver.sol` contract. It serves as the on-chain implementation for the human-readable chain name resolution proposed in **ERC-7828**.
 
@@ -55,7 +55,7 @@ This modular approach allows the registry to support identifiers of any length, 
 | `setLabelOwner(labelHash, owner)`    | Transfers the ownership of a label.                    |
 | `setOperator(operator, isOperator)`  | Manages delegated permissions.                         |
 
-## Conceptually: An ENS Layer for Chains
+## A Naming Layer for Chains
 
 The Chain Registry functions as a specialized ENS (Ethereum Name Service) for chains. Instead of resolving names to addresses, it resolves chain names to standardized identifiers (ERC-7930).
 
