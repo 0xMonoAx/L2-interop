@@ -20,14 +20,9 @@ This system:
 
 ## Architecture
 
-The `ChainResolver` contract is based on the previous `L2Resolver` implementation, developed by Wonderland and Unruggable Labs.
+The `ChainResolver` contract is inspired by previous ENS resolver implementations, adapting the concept for a global, multichain registry aligned with the ERC-7930 standard.
 
-| Concept         | Description                                                                                                                              |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **L2Resolver**  | A minimalist resolver that associates `labelhashes` (keccak256 of the chain name) with their identifier and name, allowing for direct and reverse lookups. |
-| **ChainResolver** | Extends `L2Resolver`, adapting it to a global multichain registry and aligning it with the ERC-7930 standard.                               |
-
-Both share a consistent mapping structure:
+The structure is based on a system of forward and reverse mappings for efficient name resolution:
 -   **Forward mapping**: `labelhash` → `ChainData(chainId, chainName)`
 -   **Reverse mapping**: `chainId` → `labelhash`
 -   **Ownership mapping**: `labelhash` → `owner`
@@ -75,5 +70,6 @@ This offers:
 -   Smart contracts can check the validity of a chain without relying on external sources.
 -   Adopts CAIP-2 and ERC-7930, ensuring compatibility between EVM and non-EVM ecosystems.
 -   Starts under a multisig and evolves toward community control.
+-   Its design is optimized for simplicity and security.
 
 
