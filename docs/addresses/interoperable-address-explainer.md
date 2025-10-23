@@ -1,54 +1,80 @@
-Introducing: Interoperable Addresses
-====
+# ERC-7930: Interoperable Addresses, Explained
 
-*Formal format specifications are written [here](/specs/addresses/cross-chain-interoperable-addresses-spec.md)*.
+*The formal specification can be found in [ERC-7930](https://eips.ethereum.org/EIPS/eip-7930).*
 
-Interoperable Addresses is a standard that defines address formats for a multi-chain world.
+## The Problem: Hundreds of Chains, One Address Format
 
-For a normal user, they look like this:
+With hundreds of L2s in the Ethereum ecosystem, an address like `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` is no longer sufficient. Does it belong to mainnet, Arbitrum, Optimism, or another chain? Sending funds to the wrong chain, especially to smart contracts whose code can vary between chains, can result in their permanent loss.
 
-<p>
-    <code>
-        <span style="color:grey">3::</span><span style="color: blue">vitalik.eth</span>@<span style="color: magenta">eth</span>#<span style="color:grey">5966be0f</span>
-    </code>
-</p>
+To solve this, **ERC-7930** creates a unified address format that explicitly includes chain information.
 
-- <code><span style="color:grey">3::</span></code>: the Interoperable Address Resolver version, which the wallet may omit.
-- <code><span style="color: blue">vitalik.eth</span></code>: A human-readable name specific to a chain, supported by systems similar to ENS.
-- <code><span style="color: magenta">eth</span></code>: A human-readable chain name, defined by https://github.com/ethereum-lists/chains if available (same registry as ERC-3770), or by CAIP-2 in all other cases.
-- <code><span style="color:grey">5966be0f</span></code>: A checksum that allows quick validation that what is displayed matches what is expected.
+## The Solution: A Standard for Two Audiences
 
----
+The development of ERC-7930 was guided by a key insight: on-chain infrastructure developers (bridges, messaging protocols) and wallet developers have different needs. The former require a binary, canonical, and compact format, while the latter prioritize human readability.
 
-For nerds and computers, however, they look like this:
+Therefore, ERC-7930 was designed with a "binary-first" approach, establishing a solid foundation for infrastructure that also supports a readable format for users.
 
-<p>
-    <code>
-        <span style="color:grey">3:</span><span style="color:green">eip155:1</span>:<span style="color: red">0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e</span>::<span style="color:magenta">eip155:1</span>:<span style="color: blue">0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045</span>#<span style="color:grey">5966be0f</span>
-    </code>
-</p>
+## How It Works: The Two Formats
 
-- <code><span style="color:grey">3:</span></code>: Interoperable Address version.
-- <code><span style="color:green">eip155:1</span></code>: CAIP-2 ID of the chain where the naming registry is located.
-- <code><span style="color: red">0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e</span></code>: Address of the naming registry.
-- <code><span style="color:magenta">eip155:1</span></code>: CAIP-2 ID of the chain.
-- <code><span style="color: blue">0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045</span></code>: Chain-specific address target.
-- <code><span style="color:grey">5966be0f</span></code>: Checksum of all previous fields to prevent any loss in transit.
+### 1. The Binary Format (for Contracts and Infrastructure)
 
----
+ERC-7930 defines an efficient and unambiguous binary structure, ideal for processing by smart contracts.
 
-The Interoperable Address is a format for strings to:
-- Fully specify an address on a particular chain (using CAIP-10), supporting any EVM-ecosystem chain and any chain on SLIP-044.
-- Include information for displaying it in a human-readable format, as shown above.
+```
+┌─────────┬───────────┬──────────────────────┬────────────────┬───────────────┬─────────┐
+│ Version │ ChainType │ ChainReferenceLength │ ChainReference │ AddressLength │ Address │
+└─────────┴───────────┴──────────────────────┴────────────────┴───────────────┴─────────┘
+```
+- **Version**: A 2-byte identifier that allows for future upgrades.
+- **ChainType**: A 2-byte value as defined in CAIP-350, corresponding to a CAIP-2 namespace, which allows users to know how to interpret & display the other two fields.
+- **ChainReference/Length**: The chain's identifier (e.g., `1` for Ethereum) and its length.
+- **Address/Length**: The account address in binary format and its length.
 
-Some of its features are:
-- It uses mature technologies such as CAIP-10 and ENS.
-- It is extensible for future resolving mechanisms (eg: ERC-7785, when/if it reaches production).
-- The resolution of Interoperable Addresses to human readable names is fully deterministic.
-- The edge cases can be securely abstracted into a library/SDK for wallets.
-- It does not enshrine a specific ENS contract, allowing flexibility for future naming-only rollups, deployments on other rollups, or even an ENS fork.
+### 2. The Interoperable Name (for Humans)
 
-And, in all honesty, it has some drawbacks as well:
-- It exposes a version number to users, though this can be mitigated through wallet UX.
-- Supporting different name resolution contracts means that resolving a human-readable name to a machine address may produce different results. However, this is mitigated by the checksum.
-- Wallets must maintain a set of trusted name-resolving contracts, using a trust model similar to RPC URLs. This can be handled by a library/SDK, but users should be able to override it.
+For users, the binary format is represented as an easy-to-read text string with a checksum to prevent errors.
+
+**Syntax:** `<address>@<chain>#<checksum>`
+
+**Example (EVM):**
+`0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045@eip155:1#4CA88C9C`
+
+**Example (Non-EVM):**
+`MJKqp326RZCHnAAbew9MDdui3iCKWco7fsK9sVuZTX2@solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d#88835C11`
+
+## Extending Readability with ERC-7828
+
+**[ERC-7828](https://ethereum-magicians.org/t/erc-7828-chain-specific-addresses-using-ens/21930)** extends ERC-7930 to replace addresses and chain identifiers with human-readable names resolved through ENS.
+
+**Example:** `vitalik.eth@eth#5966be0f`
+- `vitalik.eth` resolves to an address.
+- `eth` resolves to a chain identifier (`eip155:1`).
+- The `checksum` ensures the integrity of the resolved data.
+
+## Compatibility with Existing Standards
+
+### CAIP-10
+ERC-7930 is **fully compatible** with CAIP-10. Both share the same data (`address` and `chainId`). However, ERC-7930 introduces key improvements:
+- **Binary Format:** Optimized for smart contracts, unlike the text-only CAIP-10.
+- **No Length Limit:** CAIP-10 limits chain identifiers to 32 characters, while ERC-7930 has no such limit, making it future-proof.
+- **Security and Extensibility:** It includes a checksum and a version field.
+
+### CAIP-50
+They are **incompatible**. CAIP-50 uses a monolithic format (multicodec), whereas ERC-7930 is modular, separating the "container" (binary format) from its "content" (defined by CAIP-350).
+
+### Decentralized Identifiers (DID)
+ERC-7930 is compatible with the principles of the W3C DID standard (globally unique, verifiable, and no central registry), but it still needs a "DID Method" specification to be fully compliant.
+
+## The Role of CAIP-350: The Instruction Manual for Universal Support
+
+We've seen that ERC-7930 provides a flexible binary format, a kind of universal "box" or "container" for addresses. But if the format is generic, how does a wallet or application know what the bytes in the `ChainReference` and `Address` fields mean for a specific blockchain? An Ethereum address is structured differently from a Bitcoin or Solana address.
+
+This is where **CAIP-350** comes in. It acts as a companion standard, an "instruction manual" that defines the precise serialization rules for different chain families.
+
+- **ERC-7930 defines the *container***: It specifies a generic binary structure: `Version | ChainType | ChainReferenceLength | ChainReference | AddressLength | Address`. It provides the universal package but is agnostic about its content.
+- **CAIP-350 defines the *content***: It indicates *what* the data inside the container means for a specific chain type (`namespace`). For each ecosystem (EVM, Solana, Bitcoin, etc.), a "CAIP-350 profile" is created that details:
+  - The unique 2-byte `ChainType` that identifies that chain family.
+  - The exact rules for converting text addresses (e.g., Base58) to their canonical binary representation.
+  - The rules for converting chain identifiers to their binary format.
+
+In short, **ERC-7930 is the box, and CAIP-350 is the set of instructions on what to put in the box and how to pack it**. This modularity allows ERC-7930 to support any new blockchain without needing to modify the ERC-7930 standard itself. A new CAIP-350 profile simply needs to be created for that new chain, making the system truly extensible and future-proof.

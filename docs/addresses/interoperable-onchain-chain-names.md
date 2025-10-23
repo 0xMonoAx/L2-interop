@@ -1,3 +1,8 @@
+> ⚠️ **Notice**
+>
+> We are currently updating this document. A version will be available soon.  
+>
+
 # Issue l2.eth to Enable Chain-Specific Addresses
 
 # Intro

@@ -110,6 +110,6 @@ I want a simple API to parse a chain-specific address (e.g., 'chain:0x123...') a
 
 > 📌
 > **Acceptance Criteria:**
-> - Some libraries accept a chain-specific string and return a result like {`chainIdentifier`, `rawAddress`}, based on sources such as ethereum-lists/chains, ERC-7785, or others.
+> - Some libraries accept a chain-specific string and return a result like {`chainIdentifier`, `rawAddress`}, based on sources such as ethereum-lists/chains, or others.
 > - Distinguishable in cases where the same address format is used, such as raw addresses in EVM.
 > - Verify chain identifiers against a known registry.
